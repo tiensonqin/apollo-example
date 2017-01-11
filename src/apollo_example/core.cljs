@@ -4,8 +4,7 @@
               [apollo-example.handlers]
               [apollo-example.subs]
               [cljs-exponent.reagent :refer [text view image touchable-highlight] :as rn]
-              [goog.object :as gobj]
-              [apollo-example.query :as query]))
+              [goog.object :as gobj]))
 
 ;; apollo-client
 (def ReactApollo (js/require "react-apollo"))
@@ -18,10 +17,18 @@
 (def network-interface (create-network-interface (clj->js {:uri "https://graphql-pokemon.now.sh/"})))
 (def client (new apollo-client (clj->js {:networkInterface network-interface})))
 
+(defonce query "
+  query GetPokemon($name: String!) {
+    pokemon(name: $name) {
+      name
+      image
+    }
+  }")
+
 (def gql (js/require "graphql-tag"))
 
 ;; with-pokemon :: wrapped-component -> a GraphQL component
-(def with-pokemon (graphql query/query-json (clj->js {:options {:variables {:name "charmander"}}})))
+(def with-pokemon (graphql (gql (clj->js [query])) (clj->js {:options {:variables {:name "charmander"}}})))
 
 (defn alert [title]
   (.alert rn/alert title))
